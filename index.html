@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 小说生成器</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-zh">AI <span>小说</span>生成器</div>
+      <div class="title-sub">Python API · Vercel Deploy Ready</div>
+    </header>
+
+    <div class="notice">
+      这个版本已经改成安全部署结构：前端页面不再保存 API Key，AI 请求统一走后端 <code>/api/chat</code>。
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="create">✦ 创作新篇</button>
+      <button class="tab" data-tab="continue">◈ 续写情节</button>
+      <button class="tab" data-tab="outline">◉ 生成大纲</button>
+      <button class="tab" data-tab="polish">✧ 润色文本</button>
+    </div>
+
+    <section class="panel active" id="panel-create">
+      <div class="field">
+        <label>写作风格</label>
+        <div class="chip-group" id="genre-group">
+          <button class="chip on" data-genre="玄幻修仙">玄幻修仙</button>
+          <button class="chip" data-genre="都市言情">都市言情</button>
+          <button class="chip" data-genre="悬疑推理">悬疑推理</button>
+          <button class="chip" data-genre="科幻冒险">科幻冒险</button>
+          <button class="chip" data-genre="历史穿越">历史穿越</button>
+          <button class="chip" data-genre="武侠江湖">武侠江湖</button>
+          <button class="chip" data-genre="恐怖灵异">恐怖灵异</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>小说标题（可留空自动生成）</label>
+          <input type="text" id="c-title" placeholder="例：剑破苍穹" />
+        </div>
+        <div class="field">
+          <label>主要人物</label>
+          <input type="text" id="c-chars" placeholder="例：林枫，少年剑客；苏瑶，神秘女子" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>故事主题 / 简介</label>
+        <textarea id="c-theme" placeholder="例：少年意外获得上古传承，踏上修仙之路，却发现这一切背后隐藏着一个惊天秘密……"></textarea>
+      </div>
+
+      <div class="row triple">
+        <div class="field">
+          <label>生成章节数</label>
+          <select id="c-chaps">
+            <option value="1">1 章</option>
+            <option value="2">2 章</option>
+            <option value="3">3 章</option>
+            <option value="4">4 章</option>
+            <option value="5">5 章</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>每章字数</label>
+          <select id="c-words">
+            <option value="500">约 500 字</option>
+            <option value="800" selected>约 800 字</option>
+            <option value="1200">约 1200 字</option>
+            <option value="1500">约 1500 字</option>
+            <option value="2000">约 2000 字</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>创作温度</label>
+          <select id="c-temp">
+            <option value="0.7">保守稳健</option>
+            <option value="0.9" selected>均衡创意</option>
+            <option value="1.1">天马行空</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-gen" id="btn-create">✦ 开始创作</button>
+    </section>
+
+    <section class="panel" id="panel-continue">
+      <div class="field">
+        <label>已有内容（粘贴原文）</label>
+        <textarea id="cont-text" class="large-text" placeholder="粘贴你已有的小说内容，AI 将无缝续写后续情节……"></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>续写方向（可留空）</label>
+          <input type="text" id="cont-dir" placeholder="例：主角遭遇强敌，生死危机" />
+        </div>
+        <div class="field">
+          <label>续写字数</label>
+          <select id="cont-words">
+            <option value="500">约 500 字</option>
+            <option value="800" selected>约 800 字</option>
+            <option value="1200">约 1200 字</option>
+            <option value="1500">约 1500 字</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-continue">◈ 开始续写</button>
+    </section>
+
+    <section class="panel" id="panel-outline">
+      <div class="field">
+        <label>故事主题与背景</label>
+        <textarea id="out-theme" placeholder="例：架空大陆，五大王朝并立，一介草民意外卷入各方势力的争斗……"></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>规划总章节数</label>
+          <select id="out-chaps">
+            <option value="5">5 章</option>
+            <option value="10" selected>10 章</option>
+            <option value="20">20 章</option>
+            <option value="30">30 章</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>主角数量</label>
+          <select id="out-roles">
+            <option value="1">1 位主角</option>
+            <option value="2" selected>2 位主角</option>
+            <option value="3">3 位主角</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-outline">◉ 生成大纲</button>
+    </section>
+
+    <section class="panel" id="panel-polish">
+      <div class="field">
+        <label>需要润色的原文</label>
+        <textarea id="pol-text" class="large-text" placeholder="粘贴需要润色的段落……"></textarea>
+      </div>
+      <div class="field">
+        <label>润色方向</label>
+        <div class="chip-group" id="polish-group">
+          <button class="chip on" data-mode="1">✦ 提升文采意境</button>
+          <button class="chip" data-mode="2">◈ 精简压缩</button>
+          <button class="chip" data-mode="3">◉ 增加细节描写</button>
+          <button class="chip" data-mode="4">✧ 古风化改写</button>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-polish">✧ 开始润色</button>
+    </section>
+
+    <section class="output-wrap" id="outputWrap">
+      <div class="output-header">
+        <span class="output-title" id="outputLabel">生成结果</span>
+        <div class="output-actions">
+          <button class="btn-sm" id="copyBtn">复制全文</button>
+          <button class="btn-sm" id="downloadBtn">下载 .txt</button>
+          <button class="btn-sm red" id="clearBtn">清除</button>
+        </div>
+      </div>
+      <div class="status-line" id="statusLine">等待操作</div>
+      <div class="output-body">
+        <pre id="outputText">这里会显示生成结果...</pre>
+      </div>
+      <div class="stats">
+        <span>字数：<b id="statWords">0</b></span>
+        <span>耗时：<b id="statTime">0.0s</b></span>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
